@@ -14,6 +14,7 @@ INFRA_PREREQS   = $(foreach chart,$(INFRA_CHARTS),$(M)/$(chart))
 DOCKER_VERSION  ?= "17.06"
 
 K8S_VERSION     ?= "1.12.7"
+K8SCNI_VERSION     ?= "0.7.5"
 
 HELM_VERSION    ?= "2.14.2"
 HELM_SHA256SUM  ?= "9f50e69cf5cfa7268b28686728ad0227507a169e52bf59c99ada872ddd9679f0"
@@ -119,7 +120,7 @@ $(M)/setup:
 	echo "deb http://apt.kubernetes.io/ kubernetes-xenial main" > /tmp/kubernetes.list
 	sudo cp /tmp/kubernetes.list /etc/apt/sources.list.d/kubernetes.list
 	sudo apt update
-	sudo apt install -y "kubeadm=${K8S_VERSION}-*" "kubelet=${K8S_VERSION}-*" "kubectl=${K8S_VERSION}-*"
+	sudo apt install -y "kubeadm=${K8S_VERSION}-*" "kubelet=${K8S_VERSION}-*" "kubectl=${K8S_VERSION}-*" "kubernetes-cni=${K8SCNI_VERSION}-*"
 
 /usr/local/bin/helm:
 	curl -L -o /tmp/helm.tgz "https://storage.googleapis.com/kubernetes-helm/helm-v${HELM_VERSION}-${HELM_PLATFORM}.tar.gz"
