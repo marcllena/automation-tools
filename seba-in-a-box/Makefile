@@ -16,8 +16,8 @@ DOCKER_VERSION  ?= "17.06"
 K8S_VERSION     ?= "1.12.7"
 K8SCNI_VERSION     ?= "0.7.5"
 
-HELM_VERSION    ?= "2.14.2"
-HELM_SHA256SUM  ?= "9f50e69cf5cfa7268b28686728ad0227507a169e52bf59c99ada872ddd9679f0"
+HELM_VERSION    ?= "2.17.0"
+HELM_SHA256SUM  ?= "f3bec3c7c55f6a9eb9e6586b8c503f370af92fe987fcbf741f37707606d70296"
 HELM_PLATFORM   ?= "linux-amd64"
 
 CORDCTL_VERSION    ?= v1.1.5
@@ -156,14 +156,14 @@ $(M)/helm-init: | $(M)/kubeadm /usr/local/bin/helm
 		echo "Waiting for Helm to be ready"; \
 		sleep 5; \
 	done
-	helm repo add incubator https://kubernetes-charts-incubator.storage.googleapis.com/
+	helm repo add incubator https://charts.helm.sh/incubator
 	helm repo add cord https://charts.opencord.org
 	helm repo update
 	touch $@
 
 $(WORKSPACE)/cord/helm-charts: | $(M)/setup
 	mkdir -p $(WORKSPACE)/cord
-	cd $(WORKSPACE)/cord; git clone https://gerrit.opencord.org/helm-charts
+	cd $(WORKSPACE)/cord; git clone https://github.com/marcllena/helm-charts
 
 $(M)/kafka: | $(WORKSPACE)/cord/helm-charts $(M)/helm-init
 	cd $(WORKSPACE)/cord/helm-charts && \
@@ -382,7 +382,7 @@ teardown-charts: remove-chart-milestones
 	$(WORKSPACE)/cord/helm-charts/scripts/wait_for_pods.sh
 
 teardown-bbsim: remove-bbsim-milestones
-	cd $(M); rm -f voltha-running voltha 
+	cd $(M); rm -f voltha-running voltha
 	cordctl model delete RCORDSubscriber --all || true
 	timeout 60s bash -c "until cordctl model list VOLTServiceInstance --format json | wc -l | grep -q 0; do echo 'Waiting for Subscribers to be removed'; sleep 5; done"
 	cordctl model delete OLTDevice --all || true
@@ -399,4 +399,3 @@ reset-kubeadm: remove-chart-milestones remove-kube-milestones remove-test-milest
 	sudo rm -f /var/lib/cni/networks/k8s-pod-network/* || true
 	for br in /sys/class/net/pon*; do sudo ip link delete `basename $$br` type bridge; done || true
 	for br in /sys/class/net/nni*; do sudo ip link delete `basename $$br` type bridge; done || true
-
