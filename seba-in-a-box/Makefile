@@ -163,7 +163,7 @@ $(M)/helm-init: | $(M)/kubeadm /usr/local/bin/helm
 
 $(WORKSPACE)/cord/helm-charts: | $(M)/setup
 	mkdir -p $(WORKSPACE)/cord
-	cd $(WORKSPACE)/cord; git clone https://github.com/marcllena/helm-charts
+	cd $(WORKSPACE)/cord; git clone https://gerrit.opencord.org/helm-charts
 
 $(M)/kafka: | $(WORKSPACE)/cord/helm-charts $(M)/helm-init
 	cd $(WORKSPACE)/cord/helm-charts && \
